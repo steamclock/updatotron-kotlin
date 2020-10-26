@@ -1,0 +1,3 @@
+include ':versioncheckkotlin'
+include ':app'
+rootProject.name = "Version Check Kotlin"
