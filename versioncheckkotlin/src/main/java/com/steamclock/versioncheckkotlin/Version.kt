@@ -43,14 +43,20 @@ class Version(string: String): Comparable<Version> {
         }
 
         // Cannot parse any further if we have no marketing string
-        marketing ?: return
+        if (marketing.isNullOrEmpty()) {
+            if (build == null) {
+                // If we also have no build, then this is a failed parse.
+                throw VersionCheckException.InvalidVersionString()
+            } else {
+                return
+            }
+        }
 
         // Attempt to pull of additional text from the end of the string
         val splitMarketing = marketingRegex.matchEntire(marketing)
         val numericMarketing = splitMarketing?.groupValues?.getOrNull(1)
         additionalText = splitMarketing?.groupValues?.getOrNull(2) ?: ""
 
-        // Failed to parse out valid marketing pattern,
         if (numericMarketing == null || numericMarketing.startsWith(".") || numericMarketing.endsWith(".")) {
             throw VersionCheckException.InvalidVersionString()
         } else {
