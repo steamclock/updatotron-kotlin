@@ -90,7 +90,8 @@ class VersionUnitTest {
             }
         }
 
-        attemptCreate("NotABuildNumber") // Should fail but is not
+        attemptCreate("NotABuildNumber")
+        attemptCreate("NotABuildNumber@100")
         attemptCreate("1.2.") // Ends with "."
         attemptCreate(".2.3") // Starts with "."
         attemptCreate("1.2.3@100@200") // Multiple build numbers
@@ -121,5 +122,36 @@ class VersionUnitTest {
 
         shouldBeEqual.forEach { assertTrue(it.first == it.second) }
         shouldNotBeEqual.forEach { assertFalse(it.first == it.second) }
+    }
+
+    /**
+     * Testing compareTo (less than, greater than) implementation.
+     * Usually we would want to try/catch our Version instantiation, but since
+     * we expect all these should pass the test I have omitted them in this test case.
+     */
+    @Test
+    fun compareTo() {
+        fun orderedAscendingTrue(first: String, second: String) {
+            assertTrue("$first should be < $second", Version(first) < Version(second))
+        }
+
+        fun orderedAscendingFalse(first: String, second: String) {
+            assertFalse("$first should be not be < than $second", Version(first) < Version(second))
+        }
+
+        // a < b
+        orderedAscendingTrue("1.2", "1.2.1")
+        orderedAscendingTrue("1.2.2", "1.2.10")
+        orderedAscendingTrue("1.2.4", "1.3.5")
+        orderedAscendingTrue("1.2.4", "3")
+        orderedAscendingTrue("3", "4.1")
+        orderedAscendingTrue("1.2.4", "1.3.4")
+        orderedAscendingTrue("1.2", "2")
+        orderedAscendingTrue("1.2@30", "1.2@301")
+        orderedAscendingTrue("1.2-b@300", "1.2-a@301")
+
+        // a > b,
+        orderedAscendingFalse("1.2.2", "1.2.1")
+        orderedAscendingFalse("1.3@300", "1.2@200") // Bit of a trick question, build numbers are out of sequence, should probably warn in this case?
     }
 }
