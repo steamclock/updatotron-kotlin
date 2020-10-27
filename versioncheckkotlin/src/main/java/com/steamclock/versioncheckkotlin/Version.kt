@@ -31,6 +31,7 @@ class Version(string: String): Comparable<Version> {
         initWith(string)
     }
 
+    @Throws(VersionCheckException::class)
     private fun initWith(marketing: String?, buildStr: String?) {
         // Build
         if (buildStr == debugBuildString) {
@@ -49,12 +50,9 @@ class Version(string: String): Comparable<Version> {
         val numericMarketing = splitMarketing?.groupValues?.getOrNull(1)
         additionalText = splitMarketing?.groupValues?.getOrNull(2) ?: ""
 
-        // Cannot parse any further if we have no marketing numbers
-        numericMarketing ?: return
-
-        if (numericMarketing.startsWith(".") || numericMarketing.endsWith(".")) {
-            // throw VersionCheckError.invalidVersionString
-            //throw e
+        // Failed to parse out valid marketing pattern,
+        if (numericMarketing == null || numericMarketing.startsWith(".") || numericMarketing.endsWith(".")) {
+            throw VersionCheckException.InvalidVersionString()
         } else {
             marketingComponents = numericMarketing
                 .split(".")
@@ -62,19 +60,17 @@ class Version(string: String): Comparable<Version> {
                     try {
                         segment.toInt()
                     } catch (e: Exception) {
-                        // throw VersionCheckError.invalidVersionString
-                        throw e
+                        throw VersionCheckException.InvalidVersionString(e)
                     }
                 }.toIntArray()
         }
     }
 
+    @Throws(VersionCheckException::class)
     private fun initWith(string: String) {
         val parts = string.split("@")
         if (parts.size > 2) {
-            // throw VersionCheckError.invalidVersionString
-            //throw e
-            return
+            throw VersionCheckException.InvalidVersionString()
         }
 
         initWith(parts.getOrNull(0), parts.getOrNull(1))
