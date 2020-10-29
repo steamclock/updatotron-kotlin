@@ -1,4 +1,4 @@
-package com.steamclock.versioncheckkotlin
+package com.steamclock.versioncheckkotlinsample
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
