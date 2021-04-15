@@ -1,4 +1,4 @@
-package com.steamclock.versioncheckkotlin
+package com.steamclock.versioncheckkotlinsample
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
