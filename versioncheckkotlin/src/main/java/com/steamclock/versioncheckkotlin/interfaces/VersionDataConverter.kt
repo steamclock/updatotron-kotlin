@@ -1,6 +1,6 @@
 package com.steamclock.versioncheckkotlin.interfaces
 
-import com.steamclock.versioncheckkotlin.Version
+import com.steamclock.versioncheckkotlin.models.Version
 import com.steamclock.versioncheckkotlin.models.PlatformVersionData
 import com.steamclock.versioncheckkotlin.models.VersionData
 import org.json.JSONArray

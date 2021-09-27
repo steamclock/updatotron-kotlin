@@ -1,32 +1,19 @@
 package com.steamclock.versioncheckkotlin
 
 import com.steamclock.versioncheckkotlin.interfaces.DefaultVersionDataConverter
+import com.steamclock.versioncheckkotlin.utils.TestConstants
 import org.junit.Test
-
 import org.junit.Assert.*
-import java.lang.Exception
 
 class DefaultVersionDataConverterTest {
-    private val validJson = """
-        {
-            "ios" : {
-                "minimumVersion": "1.1",
-                "blockedVersions": ["1.2.0", "1.2.1", "@301"],
-                "latestTestVersion": "1.4.2@400"
-            },
-            "android" : {
-                "minimumVersion": "1.1",
-                "blockedVersions": ["1.2.0", "1.2.1", "@301"],
-                "latestTestVersion": "1.4.2@400"
-            },
-            "serverForceVersionFailure": false,
-            "serverMaintenance": false
-        }
-        """
 
+    /**
+     * Simple test to ensure that the manual JSON parsing done by DefaultVersionDataConverter
+     * produces a correct parse.
+     */
     @Test
     fun basicParse() {
-        val versionData = DefaultVersionDataConverter.parse(validJson)
+        val versionData = DefaultVersionDataConverter.parse(TestConstants.validVersionDataJson)
 
         assertNotNull(versionData.android)
         val androidVersion = versionData.android ?: return

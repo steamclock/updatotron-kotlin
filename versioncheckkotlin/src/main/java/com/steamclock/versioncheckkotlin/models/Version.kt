@@ -1,5 +1,6 @@
-package com.steamclock.versioncheckkotlin
+package com.steamclock.versioncheckkotlin.models
 
+import com.steamclock.versioncheckkotlin.VersionCheckException
 import java.lang.Exception
 import kotlin.math.max
 
