@@ -1,49 +1,51 @@
 package com.steamclock.versioncheckkotlin
 
 import androidx.lifecycle.*
-import com.steamclock.versioncheckkotlin.interfaces.DefaultVersionDataConverter
-import com.steamclock.versioncheckkotlin.interfaces.NetworkURLFetcher
-import com.steamclock.versioncheckkotlin.interfaces.URLFetcher
-import com.steamclock.versioncheckkotlin.interfaces.VersionDataConverter
+import com.steamclock.versioncheckkotlin.interfaces.*
 import com.steamclock.versioncheckkotlin.models.DisplayState
 import com.steamclock.versioncheckkotlin.models.Status
 import com.steamclock.versioncheckkotlin.models.Version
 import com.steamclock.versioncheckkotlin.models.VersionData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.lang.Exception
 import java.net.URL
 
 class VersionCheckViewModel: ViewModel() {
 
+    var upgradeDialogHandler: UpgradeDialog? = null
+
     private val mutableStatus = MutableLiveData<Status>()
     val status = mutableStatus as LiveData<Status>
 
-    // todo add displayState
-    //private val mutableDisplayState = MutableLiveData<DisplayState>()
-    //val displayState = mutableDisplayState as LiveData<DisplayState>
+    private val mutableDisplayState = MutableLiveData<DisplayState>()
+    val displayState = mutableDisplayState as LiveData<DisplayState>
 
     private var serverVersionData: VersionData? = null
 
     init {
         mutableStatus.value = Status.Unknown
-        //mutableDisplayState.value = DisplayState.Clear
+        mutableDisplayState.value = DisplayState.Clear
     }
 
-    fun runVersionCheck(url: String,
-                        appVersionName: String,
+    fun runVersionCheck(appVersionName: String,
                         appVersionCode: String,
+                        url: String,
                         urlFetcher: URLFetcher = NetworkURLFetcher,
                         versionDataConverter: VersionDataConverter = DefaultVersionDataConverter) {
 
         viewModelScope.launch(Dispatchers.IO) {
             val jsonStr = urlFetcher.getData(URL(url))
-            if (jsonStr == null) {
-                // Failed to get data from URL
-                mutableStatus.postValue(Status.FetchFailure)
-                return@launch
+            withContext(Dispatchers.Main) {
+                if (jsonStr == null) {
+                    // Failed to get data from URL
+                    setFailure()
+                } else {
+                    validateUsingJson(jsonStr, appVersionName, appVersionCode, versionDataConverter)
+                }
+
             }
-            validateUsingJson(jsonStr, appVersionName, appVersionCode, versionDataConverter)
         }
     }
 
@@ -61,7 +63,8 @@ class VersionCheckViewModel: ViewModel() {
             serverVersionData = versionDataConverter.parse(jsonStr)
         } catch (e: Exception) {
             // Failed to parse data
-            mutableStatus.postValue(Status.FetchFailure)
+            setFailure()
+            return
         }
 
         try {
@@ -69,32 +72,57 @@ class VersionCheckViewModel: ViewModel() {
             validateAppVersion(appVersion)
         } catch (e: Exception) {
             // Failed to parse app version
-            mutableStatus.postValue(Status.FetchFailure)
+            setFailure()
+            return
         }
     }
 
     private fun validateAppVersion(appVersion: Version) {
         // todo 2021-09-27 Add support for latestTestVersion
         val serverMinVersion = serverVersionData?.android?.minimumVersion ?: run {
-            mutableStatus.postValue(Status.FetchFailure)
+            setFailure()
             return
         }
 
         if (appVersion < serverMinVersion) {
             // App version now below the server minimum
-            mutableStatus.postValue(Status.VersionDisallowed)
+            setDisallowed()
             return
         }
 
         serverVersionData?.android?.blockedVersions?.let { blockedSet ->
             if (blockedSet.contains(appVersion)) {
                 // App version has been flagged as being a blocked version
-                mutableStatus.postValue(Status.VersionDisallowed)
+                setDisallowed()
                 return
             }
         }
 
         // If we get all the way down here, the version is allowed!
+        setAllowed()
+    }
+
+    private fun setDisallowed() {
+        mutableStatus.postValue(Status.VersionDisallowed)
+
+        // Determine if force update or not
+        // If dialog handler set, have it handle the state immediately
+        val newState = DisplayState.ForceUpdate
+        mutableDisplayState.postValue(newState)
+        upgradeDialogHandler?.showDialogForState(newState)
+    }
+
+    private fun setAllowed() {
         mutableStatus.postValue(Status.VersionAllowed)
+        val newState = DisplayState.Clear
+        mutableDisplayState.postValue(newState)
+        upgradeDialogHandler?.showDialogForState(newState)
+    }
+
+    private fun setFailure() {
+        mutableStatus.postValue(Status.FetchFailure)
+        val newState = DisplayState.Clear
+        mutableDisplayState.postValue(newState)
+        upgradeDialogHandler?.showDialogForState(newState)
     }
 }
