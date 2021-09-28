@@ -163,8 +163,9 @@ class Version(string: String): Comparable<Version> {
         return true
     }
 
-// todo iOS overrides ~=
-    //    // Pattern match against a version, use the first argument as a pattern, value will match if any components are equal,
+// todo iOS overrides ~= (this appears to be a "contains" operator that is used in switch statements).
+
+//    // Pattern match against a version, use the first argument as a pattern, value will match if any components are equal,
 //    // OR are nil in the pattern,
 //    public static func ~= (_ pattern: Version, _ value: Version) -> Bool {
 //        // assume that all missing components in value are zeros

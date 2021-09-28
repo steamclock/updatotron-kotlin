@@ -7,13 +7,31 @@ data class PlatformVersionData(
 
     /**
      * Returns true if the given version is contained in the BlockedVersions set.
-     * Note, this only takes into account marketing version, not build number.
-     * todo Check if this assumption is actually true
+     * If the blocked version contains a build number, then the compared version must match
+     * that build number directly. If the blocked version ONLY contains a build number, then
+     * only the build number is taken into account.
      */
     fun containsBlockedVersion(other: Version): Boolean {
         if (blockedVersions == null) return false
-        if (blockedVersions.any { it.marketingComponentsEqual(other) }) return true
-        return false
+
+        return blockedVersions.any { blocked ->
+            val marketingEqual = blocked.marketingComponentsEqual(other)
+            val buildEqual = blocked.build != null && blocked.build == other.build
+            when {
+                blocked.build == null -> {
+                    // Blocked item is marketing components only (ex. 2.3.4)
+                    marketingEqual
+                }
+                blocked.marketingComponents.isEmpty() -> {
+                    // Blocked item is only a build number (ex. @300)
+                    buildEqual
+                }
+                else -> {
+                    // Blocked item contains both components (ex. 2.3.4@300)
+                    marketingEqual && buildEqual
+                }
+            }
+        }
     }
 }
 
