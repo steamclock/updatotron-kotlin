@@ -17,20 +17,22 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val defaultDialogHandler = DefaultUpgradeDialog(this)
-        lifecycle.addObserver(defaultDialogHandler)
-        versionCheck.upgradeDialogHandler = DefaultUpgradeDialog(this)
         setupObservers()
         runVersionCheck()
     }
 
     private fun runVersionCheck() {
+        // Setup dialog handler
+        val defaultDialogHandler = DefaultUpgradeDialog(this)
+        lifecycle.addObserver(defaultDialogHandler)
+
+        // Run version check
         versionCheck.runVersionCheck(
             appVersionName = BuildConfig.VERSION_NAME,
             appVersionCode = BuildConfig.VERSION_CODE.toString(),
             url = "https://doesn't_matter",
-            urlFetcher = MockURLFetcher
+            urlFetcher = MockURLFetcher,
+            upgradeDialog = defaultDialogHandler
         )
     }
 

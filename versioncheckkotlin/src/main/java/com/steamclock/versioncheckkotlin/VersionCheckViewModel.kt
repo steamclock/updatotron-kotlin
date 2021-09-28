@@ -14,14 +14,30 @@ import java.net.URL
 
 class VersionCheckViewModel: ViewModel() {
 
-    var upgradeDialogHandler: UpgradeDialog? = null
-
+    /**
+     * Status of the version check; if upgradeDialogHandler has already been set, there isn't
+     * a need to observe this directly.
+     */
     private val mutableStatus = MutableLiveData<Status>()
     val status = mutableStatus as LiveData<Status>
 
+    /**
+     * Indicates the display state for the Dialog; if upgradeDialogHandler has already been
+     * set, there isn't a need to observe this directly.
+     */
     private val mutableDisplayState = MutableLiveData<DisplayState>()
     val displayState = mutableDisplayState as LiveData<DisplayState>
 
+    /**
+     * If set, this interface will be notified with any DisplayState changes that have occurred
+     * during the version check.
+     */
+    private var upgradeDialogHandler: UpgradeDialog? = null
+
+    /**
+     * Either passed in directly via validateUsingJson, or is the result of running the
+     * URLFetcher with the given URL.
+     */
     private var serverVersionData: VersionData? = null
 
     init {
@@ -33,8 +49,10 @@ class VersionCheckViewModel: ViewModel() {
                         appVersionCode: String,
                         url: String,
                         urlFetcher: URLFetcher = NetworkURLFetcher,
-                        versionDataConverter: VersionDataConverter = DefaultVersionDataConverter) {
+                        versionDataConverter: VersionDataConverter = DefaultVersionDataConverter,
+                        upgradeDialog: UpgradeDialog? = null) {
 
+        upgradeDialogHandler = upgradeDialog
         viewModelScope.launch(Dispatchers.IO) {
             val jsonStr = urlFetcher.getData(URL(url))
             withContext(Dispatchers.Main) {
@@ -105,7 +123,7 @@ class VersionCheckViewModel: ViewModel() {
     private fun setDisallowed() {
         mutableStatus.postValue(Status.VersionDisallowed)
 
-        // Determine if force update or not
+        // todo Currently always ForceUpdate, add logic to determine when shouldUpdate is required
         // If dialog handler set, have it handle the state immediately
         val newState = DisplayState.ForceUpdate
         mutableDisplayState.postValue(newState)
