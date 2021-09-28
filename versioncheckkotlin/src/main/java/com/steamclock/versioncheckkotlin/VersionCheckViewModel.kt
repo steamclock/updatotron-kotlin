@@ -97,27 +97,34 @@ class VersionCheckViewModel: ViewModel() {
 
     private fun validateAppVersion(appVersion: Version) {
         // todo 2021-09-27 Add support for latestTestVersion
-        val serverMinVersion = serverVersionData?.android?.minimumVersion ?: run {
+        val androidVersionData = serverVersionData?.android
+        if (androidVersionData == null) {
+            // Failed to parse android data
             setFailure()
             return
         }
 
-        if (appVersion < serverMinVersion) {
-            // App version now below the server minimum
-            setDisallowed()
+        val serverMinVersion = androidVersionData.minimumVersion
+        if (serverMinVersion == null) {
+            // Failed to parse min version
+            setFailure()
             return
         }
 
-        serverVersionData?.android?.blockedVersions?.let { blockedSet ->
-            if (blockedSet.contains(appVersion)) {
-                // App version has been flagged as being a blocked version
+        when {
+            appVersion < serverMinVersion -> {
+                // App version now below the server minimum
                 setDisallowed()
-                return
+            }
+            androidVersionData.containsBlockedVersion(appVersion) -> {
+                // Current app version is now blocked
+                setDisallowed()
+            }
+            else -> {
+                // If we get all the way down here, the version is allowed!
+                setAllowed()
             }
         }
-
-        // If we get all the way down here, the version is allowed!
-        setAllowed()
     }
 
     private fun setDisallowed() {

@@ -99,7 +99,6 @@ class Version(string: String): Comparable<Version> {
         // marketingComponents and build must be equal.
         if (!paddedArrays.first.contentEquals(paddedArrays.second)) return false
         if (build != other.build) return false
-
         return true
     }
 
@@ -147,6 +146,21 @@ class Version(string: String): Comparable<Version> {
         // Finally, if marketing values the same, and neither are development builds, then tie
         // breaker comes down to build number.
         return thisBuild.compareTo(otherBuild)
+    }
+
+    /**
+     * Returns true if the marketing components are equal
+     * ie. 2.1.0 equals 2.1.0
+     *     2.1.0 equals 2.1
+     *     2.1.0 does not equal 2.1.1
+     */
+    fun marketingComponentsEqual(other: Version): Boolean {
+        // Pad out arrays with 0s
+        val zipPaddedArrays = createZipPaddedArrays(this.marketingComponents, other.marketingComponents)
+        zipPaddedArrays.forEach {
+            if (it.first != it.second) return false
+        }
+        return true
     }
 
 // todo iOS overrides ~=

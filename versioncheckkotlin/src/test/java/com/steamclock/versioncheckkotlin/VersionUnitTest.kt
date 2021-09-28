@@ -155,4 +155,30 @@ class VersionUnitTest {
         orderedAscendingFalse("1.2.2", "1.2.1")
         orderedAscendingFalse("1.3@300", "1.2@200") // Bit of a trick question, build numbers are out of sequence, should probably warn in this case?
     }
+
+    /**
+     * Testing marketingComponentsEqual implementation.
+     */
+    @Test
+    fun testMarketingComponentsEqual() {
+        val shouldBeTrue = listOf(
+            Pair(Version("1.2.0"), Version("1.2.0")), // Exact
+            Pair(Version("1.2"), Version("1.2.0")), // Omitted component
+            Pair(Version("1.2.0.0.0"), Version("1.2")), // Silly number of 0'd components
+            Pair(Version("1.2.0"), Version("1.2.0-beta")), // With extra
+            Pair(Version("1.2-beta"), Version("1.2.0")), // With extra and omitted component
+            Pair(Version("1.2.0@200"), Version("1.2.0")), // With build
+            Pair(Version("1.2"), Version("1.2.0@200")), // With build and omitted component
+            Pair(Version("1.2.0"), Version("1.2.0-beta@200")), // With extra and build
+            Pair(Version("1.2-beta@200"), Version("1.2.0")) // With extra, build and and omitted component
+        )
+
+        val shouldNotFalse = listOf(
+            Pair(Version("1.2.1"), Version("1.2.0")), // Exact
+            Pair(Version("1.2.0"), Version("1.2.1")) // Exact
+        )
+
+        shouldBeTrue.forEach { assertTrue(it.first.marketingComponentsEqual(it.second)) }
+        shouldNotFalse.forEach { assertFalse(it.first.marketingComponentsEqual(it.second)) }
+    }
 }

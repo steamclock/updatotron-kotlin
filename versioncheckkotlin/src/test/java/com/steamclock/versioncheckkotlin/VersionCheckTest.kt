@@ -23,6 +23,7 @@ class VersionCheckTest : TestCase() {
     // Test properties
     private val mockAppName = "1.1"
     private val mockAppNameShouldFail = "1.0"
+    private val mockAppNameBlocked = "1.2.1"
     private val mockAppBuild = "400"
     private lateinit var versionCheckVM: VersionCheckViewModel
 
@@ -60,6 +61,17 @@ class VersionCheckTest : TestCase() {
     }
 
     @Test
+    fun `Status set to Disallowed when app version is blocked`() {
+        versionCheckVM.validateUsingJson(
+            TestConstants.validVersionDataJson,
+            mockAppNameBlocked,
+            mockAppBuild
+        )
+        val status: Status = versionCheckVM.status.getOrAwaitValue()
+        assertTrue(status == Status.VersionDisallowed)
+    }
+
+    @Test
     fun `Status set to FetchFailure when json is malformed`() {
         versionCheckVM.validateUsingJson(
             TestConstants.malformedJson,
@@ -80,4 +92,5 @@ class VersionCheckTest : TestCase() {
         val status: Status = versionCheckVM.status.getOrAwaitValue()
         assertTrue(status == Status.FetchFailure)
     }
+
 }
