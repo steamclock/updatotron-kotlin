@@ -162,25 +162,7 @@ class Version(string: String): Comparable<Version> {
         }
         return true
     }
-
-// todo iOS overrides ~= (this appears to be a "contains" operator that is used in switch statements).
-
-//    // Pattern match against a version, use the first argument as a pattern, value will match if any components are equal,
-//    // OR are nil in the pattern,
-//    public static func ~= (_ pattern: Version, _ value: Version) -> Bool {
-//        // assume that all missing components in value are zeros
-//        let components = Zip2WithNilPadding(pattern.marketingComponents, value.marketingComponents).map { ($0.0, $0.1 ?? 0) }
-//
-//        // check that all marketing components are equal, or misisng in the patterns
-//        let marketingMatches = components.reduce(true) {
-//            return $0 && (($1.0 == $1.1) || ($1.0 == nil))
-//        }
-//
-//        // overall equality is marketing equality and build equality
-//        return marketingMatches && ((pattern.build == value.build) || (pattern.build == nil))
-//    }
-
-
+    
     //---------------------------------------------------------------------------------
     // Private helpers
     //---------------------------------------------------------------------------------
