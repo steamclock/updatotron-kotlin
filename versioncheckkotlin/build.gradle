@@ -16,6 +16,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
+
     testOptions {
         // Allow us to test JSONObject
         unitTests.returnDefaultValues = true
@@ -39,17 +40,19 @@ android {
 dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation "androidx.core:core-ktx:$ktx_core"
+    implementation "androidx.appcompat:appcompat:$appcompat"
+    implementation "com.google.android.material:material:$material"
 
-    testImplementation 'junit:junit:4.+'
-    testImplementation 'org.json:json:20180813' // Allow us to test JSONObject
+    implementation "androidx.activity:activity-ktx:$ktx_activity"
+    implementation "androidx.fragment:fragment-ktx:$ktx_fragment"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$ktx_lifecycle_viewmodel"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation "junit:junit:$junit"
+    testImplementation "org.json:json:20180813" // Allow us to test JSONObject
 
-
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0"
+    testImplementation "org.mockito:mockito-core:$mockito_core"
+    testImplementation "androidx.arch.core:core-testing:$arch_test_core"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_test"
 }
