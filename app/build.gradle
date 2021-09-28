@@ -36,8 +36,6 @@ dependencies {
     implementation project(':versioncheckkotlin')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "androidx.appcompat:appcompat:$appcompat"
     implementation "com.google.android.material:material:$material"
-    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout"
     implementation "androidx.activity:activity-ktx:$ktx_activity"
 }

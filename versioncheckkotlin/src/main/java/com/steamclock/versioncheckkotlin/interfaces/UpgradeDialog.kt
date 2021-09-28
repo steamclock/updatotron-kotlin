@@ -1,7 +1,6 @@
 package com.steamclock.versioncheckkotlin.interfaces
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Dialog
 import androidx.lifecycle.*
 import com.steamclock.versioncheckkotlin.models.DisplayState
 

@@ -40,19 +40,9 @@ android {
 dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "androidx.core:core-ktx:$ktx_core"
-    implementation "androidx.appcompat:appcompat:$appcompat"
-    implementation "com.google.android.material:material:$material"
-
     implementation "androidx.activity:activity-ktx:$ktx_activity"
-    implementation "androidx.fragment:fragment-ktx:$ktx_fragment"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$ktx_lifecycle_viewmodel"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines"
 
     testImplementation "junit:junit:$junit"
     testImplementation "org.json:json:20180813" // Allow us to test JSONObject
-
-    testImplementation "org.mockito:mockito-core:$mockito_core"
     testImplementation "androidx.arch.core:core-testing:$arch_test_core"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_test"
 }
