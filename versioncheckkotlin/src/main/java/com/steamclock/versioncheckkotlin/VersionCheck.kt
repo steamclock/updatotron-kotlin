@@ -40,6 +40,8 @@ class VersionCheck(private val config: VersionCheckConfig):
     //--------------------------------------------------
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onAppStarted() {
+        // This is called when the app is started, or when coming back from background.
+        // todo we could put a timer on how often this is actually ran?
         runVersionCheck()
     }
 
