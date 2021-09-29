@@ -125,8 +125,9 @@ class DefaultUpgradeDialog(private val versionDisplayState: StateFlow<DisplaySta
         currentActivityContext = WeakReference(activity)
         if (needToShowDialog) {
             showForState(activity, versionDisplayState.value)
+        } else {
+            reshowDialog()
         }
-        reshowDialog()
     }
 
     override fun onActivityPaused(activity: Activity) {
