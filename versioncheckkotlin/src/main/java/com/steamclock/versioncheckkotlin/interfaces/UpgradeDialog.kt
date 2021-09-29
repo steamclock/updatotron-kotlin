@@ -1,34 +1,36 @@
 package com.steamclock.versioncheckkotlin.interfaces
-import android.app.Activity
+
 import android.app.AlertDialog
+import android.content.Context
 import androidx.lifecycle.*
 import com.steamclock.versioncheckkotlin.models.DisplayState
 
+
 interface UpgradeDialog {
-    fun showDialogForState(state: DisplayState)
+    fun show(context: Context, state: DisplayState)
+    fun showDialog()
+    fun dismissDialog()
 }
 
-class DefaultUpgradeDialog(
-    private val activity: Activity): UpgradeDialog, LifecycleObserver {
-
+class DefaultUpgradeDialog: UpgradeDialog {
     private var dialog: AlertDialog? = null
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun dismissDialog() {
-        dialog?.dismiss()
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun showDialog() {
-        if (dialog?.isShowing == false) {
-            dialog?.show()
+    override fun dismissDialog() {
+        if (dialog?.isShowing == true) {
+            dialog?.dismiss()
         }
     }
 
-    override fun showDialogForState(state: DisplayState) {
+    override fun showDialog() {
+        dismissDialog()
+        dialog?.show()
+    }
+
+    override fun show(context: Context, state: DisplayState) {
         when (state) {
             DisplayState.ForceUpdate -> {
                 createBasicDialog(
+                    context,
                     "Must Update",
                     "The version of the application is out of date and cannot run. Please update to the latest version from the Play Store.",
                     requiresUpdate = true,
@@ -37,10 +39,12 @@ class DefaultUpgradeDialog(
             }
             DisplayState.SuggestUpdate -> {
                 createBasicDialog(
+                    context,
                     "Should Update",
                     "The version of the application is out of date and should not run. Please update to the latest version from the Play Store.",
                     requiresUpdate = true,
-                    canDismiss = true)
+                    canDismiss = true
+                )
             }
             // todo 2021-09 Handle down for maintenance
             else -> {
@@ -52,12 +56,15 @@ class DefaultUpgradeDialog(
         dialog?.show()
     }
 
-    private fun createBasicDialog(title: String,
-                                  message: String,
-                                  requiresUpdate: Boolean,
-                                  canDismiss: Boolean) {
+    private fun createBasicDialog(
+        context: Context,
+        title: String,
+        message: String,
+        requiresUpdate: Boolean,
+        canDismiss: Boolean
+    ) {
 
-        val builder = AlertDialog.Builder(activity).apply {
+        val builder = AlertDialog.Builder(context).apply {
             setTitle(title)
             setMessage(message)
             setCancelable(canDismiss)
