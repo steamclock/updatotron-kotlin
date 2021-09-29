@@ -68,6 +68,7 @@ class DefaultUpgradeDialog(private val versionDisplayState: StateFlow<DisplaySta
             }
         }
         dialog?.show()
+        needToShowDialog = false
     }
 
     private fun createBasicDialog(
