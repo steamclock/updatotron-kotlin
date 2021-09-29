@@ -9,9 +9,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 
 class VersionCheck(
-    val versionRepository: VersionRepository,
-    val applicationScope: CoroutineScope = MainScope(),
-    val upgradeDialog: UpgradeDialog): Application.ActivityLifecycleCallbacks {
+    private val versionRepository: VersionRepository,
+    private val applicationScope: CoroutineScope = MainScope(),
+    private val upgradeDialog: UpgradeDialog): Application.ActivityLifecycleCallbacks {
 
     //-----------------------------------------------------------------
     // Using ActivityLifecycleCallbacks to launch version checks and collect
@@ -26,7 +26,7 @@ class VersionCheck(
             // Called in onActivityStarted, so we should not have to use
             // repeatOnLifecycle(Lifecycle.State.STARTED) as our collection scope.
             versionRepository.displayStateFlow.collect {
-                //upgradeDialog.show(activity, it)
+                upgradeDialog.show(activity, it)
                 Toast.makeText(activity, it.toString(), Toast.LENGTH_LONG).show()
             }
         }
