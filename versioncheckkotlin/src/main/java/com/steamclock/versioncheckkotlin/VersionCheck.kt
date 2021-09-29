@@ -123,9 +123,7 @@ class VersionCheck(private val config: VersionCheckConfig):
             }
         }
     }
-
-    // todo possibly use externalScope to emit in a couroutine scope
-
+    
     private fun setDisallowed() {
         mutableStatusFlow.value = Status.VersionDisallowed
         // todo Currently always ForceUpdate, add logic to determine when shouldUpdate is required
