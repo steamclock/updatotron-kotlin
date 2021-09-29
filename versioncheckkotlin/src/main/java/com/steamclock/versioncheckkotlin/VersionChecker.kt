@@ -8,7 +8,7 @@ import com.steamclock.versioncheckkotlin.interfaces.UpgradeDialog
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 
-class VersionCheck(
+class VersionChecker(
     private val versionRepository: VersionRepository,
     private val applicationScope: CoroutineScope = MainScope(),
     private val upgradeDialog: UpgradeDialog): Application.ActivityLifecycleCallbacks {

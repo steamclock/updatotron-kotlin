@@ -1,14 +1,10 @@
 package com.steamclock.versioncheckkotlinsample
 
-import android.app.Activity
 import android.app.Application
-import android.os.Bundle
-import android.widget.Toast
-import com.steamclock.versioncheckkotlin.VersionCheck
+import com.steamclock.versioncheckkotlin.VersionChecker
 import com.steamclock.versioncheckkotlin.VersionRepository
 import com.steamclock.versioncheckkotlin.interfaces.DefaultUpgradeDialog
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 
 class App: Application() {
 
@@ -18,7 +14,7 @@ class App: Application() {
     }
 
     private fun setupVersionCheck() {
-        val versionChecker = VersionCheck(
+        val versionChecker = VersionChecker(
             VersionRepository(
                 appVersionName = BuildConfig.VERSION_NAME,
                 appVersionCode = BuildConfig.VERSION_CODE,

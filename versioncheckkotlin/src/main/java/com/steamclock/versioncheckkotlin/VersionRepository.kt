@@ -5,7 +5,6 @@ import com.steamclock.versioncheckkotlin.models.DisplayState
 import com.steamclock.versioncheckkotlin.models.Status
 import com.steamclock.versioncheckkotlin.models.Version
 import com.steamclock.versioncheckkotlin.models.VersionData
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.lang.Exception
