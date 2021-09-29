@@ -1,12 +1,17 @@
 package com.steamclock.versioncheckkotlinsample
 
 import android.app.Application
-import com.steamclock.versioncheckkotlin.VersionChecker
-import com.steamclock.versioncheckkotlin.VersionRepository
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.ProcessLifecycleOwner
+import com.steamclock.versioncheckkotlin.VersionCheck
+import com.steamclock.versioncheckkotlin.VersionCheckConfig
 import com.steamclock.versioncheckkotlin.interfaces.DefaultUpgradeDialog
+import com.steamclock.versioncheckkotlin.interfaces.URLFetcher
 import kotlinx.coroutines.*
+import java.net.URL
+import kotlin.random.Random
 
-class App: Application() {
+class App: Application(), LifecycleObserver {
 
     override fun onCreate() {
         super.onCreate()
@@ -14,16 +19,38 @@ class App: Application() {
     }
 
     private fun setupVersionCheck() {
-        val versionChecker = VersionChecker(
-            VersionRepository(
-                appVersionName = BuildConfig.VERSION_NAME,
-                appVersionCode = BuildConfig.VERSION_CODE,
-                url = "https://doesn't_matter",
-                urlFetcher = MainActivity.MockURLFetcher
-            ),
-            MainScope(),
-            DefaultUpgradeDialog()
+        val versionChecker = VersionCheck(
+            VersionCheckConfig(
+            appVersionName = BuildConfig.VERSION_NAME,
+            appVersionCode = BuildConfig.VERSION_CODE,
+            url = "https://doesn't_matter",
+            urlFetcher = MockURLFetcher
+          )
         )
-        registerActivityLifecycleCallbacks(versionChecker)
+        val upgradeDialog = DefaultUpgradeDialog(versionChecker.displayStateFlow)
+
+        ProcessLifecycleOwner.get().lifecycle.addObserver(versionChecker)
+        registerActivityLifecycleCallbacks(upgradeDialog)
+    }
+}
+
+object MockURLFetcher: URLFetcher {
+    override fun getData(url: URL): String? {
+        return """
+                    {
+                        "ios" : {
+                            "minimumVersion": "1.1",
+                            "blockedVersions": ["1.2.0", "1.2.1", "@301"],
+                            "latestTestVersion": "1.4.2@400"
+                        },
+                        "android" : {
+                            "minimumVersion": "1.1",
+                            "blockedVersions": ["1.2.0", "1.2.1", "@301"],
+                            "latestTestVersion": "1.4.2@400"
+                        },
+                        "serverForceVersionFailure": false,
+                        "serverMaintenance": false
+                    }
+                    """
     }
 }

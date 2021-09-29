@@ -38,4 +38,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "com.google.android.material:material:$material"
     implementation "androidx.activity:activity-ktx:$ktx_activity"
+    implementation "androidx.lifecycle:lifecycle-process:$lifecycles"
 }

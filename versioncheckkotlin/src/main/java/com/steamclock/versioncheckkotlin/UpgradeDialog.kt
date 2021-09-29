@@ -1,32 +1,47 @@
 package com.steamclock.versioncheckkotlin.interfaces
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.app.Application
 import android.content.Context
-import androidx.lifecycle.*
+import android.os.Bundle
 import com.steamclock.versioncheckkotlin.models.DisplayState
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
-
-interface UpgradeDialog {
-    fun show(context: Context, state: DisplayState)
-    fun showDialog()
-    fun dismissDialog()
-}
-
-class DefaultUpgradeDialog: UpgradeDialog {
+class DefaultUpgradeDialog(private val versionDisplayState: StateFlow<DisplayState>) : Application.ActivityLifecycleCallbacks {
     private var dialog: AlertDialog? = null
+    private val coroutineScope = MainScope()
+    private var needToShowDialog = false
+    private var currentActivityContext: WeakReference<Context>? = null
 
-    override fun dismissDialog() {
+    init {
+        coroutineScope.launch {
+            versionDisplayState.collect { displayState ->
+                when (val ctx = currentActivityContext?.get()) {
+                    null -> needToShowDialog = true
+                    else -> showForState(ctx, displayState)
+                }
+            }
+        }
+    }
+
+    private fun dismissDialog() {
         if (dialog?.isShowing == true) {
             dialog?.dismiss()
         }
     }
 
-    override fun showDialog() {
+    private fun reshowDialog() {
         dismissDialog()
         dialog?.show()
     }
 
-    override fun show(context: Context, state: DisplayState) {
+    private fun showForState(context: Context, state: DisplayState) {
+        dismissDialog()
         when (state) {
             DisplayState.ForceUpdate -> {
                 createBasicDialog(
@@ -52,7 +67,6 @@ class DefaultUpgradeDialog: UpgradeDialog {
                 dialog = null
             }
         }
-
         dialog?.show()
     }
 
@@ -92,5 +106,42 @@ class DefaultUpgradeDialog: UpgradeDialog {
                 }
             }
         }
+    }
+
+    //-----------------------------------------------------------------
+    // Using ActivityLifecycleCallbacks to launch version checks and collect
+    // state flows.
+    //-----------------------------------------------------------------
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+        /* No op */
+    }
+
+    override fun onActivityStarted(activity: Activity) {
+       /* No op */
+    }
+
+    override fun onActivityResumed(activity: Activity) {
+        currentActivityContext = WeakReference(activity)
+        if (needToShowDialog) {
+            showForState(activity, versionDisplayState.value)
+        }
+        reshowDialog()
+    }
+
+    override fun onActivityPaused(activity: Activity) {
+        currentActivityContext = null
+        dismissDialog()
+    }
+
+    override fun onActivityStopped(activity: Activity) {
+        /* No op */
+    }
+
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
+        /* No op */
+    }
+
+    override fun onActivityDestroyed(activity: Activity) {
+        /* No op */
     }
 }

@@ -1,21 +1,23 @@
 package com.steamclock.versioncheckkotlin
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.steamclock.versioncheckkotlin.interfaces.*
 import com.steamclock.versioncheckkotlin.models.DisplayState
 import com.steamclock.versioncheckkotlin.models.Status
 import com.steamclock.versioncheckkotlin.models.Version
 import com.steamclock.versioncheckkotlin.models.VersionData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.net.URL
 
-class VersionRepository(
-    private val appVersionName: String,
-    private val appVersionCode: Int,
-    private val url: String,
-    private val urlFetcher: URLFetcher = NetworkURLFetcher,
-    private val versionDataConverter: VersionDataConverter = DefaultVersionDataConverter) {
+class VersionCheck(private val config: VersionCheckConfig):
+    LifecycleObserver {
 
     /**
      * Status of the version check; if upgradeDialogHandler has already been set, there isn't
@@ -31,17 +33,31 @@ class VersionRepository(
     private val mutableDisplayStateFlow = MutableStateFlow<DisplayState>(DisplayState.Clear)
     val displayStateFlow: StateFlow<DisplayState> = mutableDisplayStateFlow
 
+    private val coroutineScope = MainScope()
+
+    //--------------------------------------------------
+    // App LifecycleObserver Hooks - requires lifecycle annotations
+    //--------------------------------------------------
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onAppStarted() {
+        runVersionCheck()
+    }
+
+    //--------------------------------------------------
+    // Public methods
+    //--------------------------------------------------
     /**
-     * Should always be called using Dispatchers.IO?
      * todo 2021-09-29 Requires testing when using actual network call
      */
     fun runVersionCheck() {
-        val jsonStr = urlFetcher.getData(URL(url))
-        if (jsonStr == null) {
-            // Failed to get data from URL
-            setFailure()
-        } else {
-            validateUsingJson(jsonStr, appVersionName, appVersionCode, versionDataConverter)
+        coroutineScope.launch(Dispatchers.IO) {
+            val jsonStr = config.urlFetcher.getData(URL(config.url))
+            if (jsonStr == null) {
+                // Failed to get data from URL
+                setFailure()
+            } else {
+                validateUsingJson(jsonStr, config.appVersionName, config.appVersionCode, config.versionDataConverter)
+            }
         }
     }
 
