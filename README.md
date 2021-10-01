@@ -5,7 +5,7 @@ A library for doing checking of supported versions for a network service
 Example basic usage:
 
 ```
-class App: Application(), LifecycleObserver {
+class App: Application() {
 
     override fun onCreate() {
         super.onCreate()
