@@ -13,7 +13,7 @@ class DefaultVersionDataConverterTest {
      */
     @Test
     fun basicParse() {
-        val versionData = DefaultVersionDataConverter.parse(TestConstants.validVersionDataJson)
+        val versionData = DefaultVersionDataConverter.parse(TestConstants.MockJson.validVersionDataJson)
 
         assertNotNull(versionData.android)
         val androidVersion = versionData.android ?: return

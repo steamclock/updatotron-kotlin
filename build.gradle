@@ -9,6 +9,7 @@ buildscript {
 
     ext.junit = "4.13.2"
     ext.arch_test_core = "2.1.0"
+    ext.turbine = "0.6.1"
 
     repositories {
         google()

@@ -44,5 +44,5 @@ dependencies {
 
     testImplementation "junit:junit:$junit"
     testImplementation "org.json:json:20180813" // Allow us to test JSONObject
-    testImplementation "androidx.arch.core:core-testing:$arch_test_core"
+    testImplementation "app.cash.turbine:turbine:$turbine" // Testing StateFlows
 }

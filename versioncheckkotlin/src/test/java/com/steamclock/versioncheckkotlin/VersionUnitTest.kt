@@ -2,7 +2,6 @@ package com.steamclock.versioncheckkotlin
 
 import com.steamclock.versioncheckkotlin.models.Version
 import org.junit.Test
-
 import org.junit.Assert.*
 import java.lang.Exception
 
