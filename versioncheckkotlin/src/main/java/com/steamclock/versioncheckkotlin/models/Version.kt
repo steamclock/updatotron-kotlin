@@ -1,5 +1,6 @@
-package com.steamclock.versioncheckkotlin
+package com.steamclock.versioncheckkotlin.models
 
+import com.steamclock.versioncheckkotlin.VersionCheckException
 import java.lang.Exception
 import kotlin.math.max
 
@@ -98,7 +99,6 @@ class Version(string: String): Comparable<Version> {
         // marketingComponents and build must be equal.
         if (!paddedArrays.first.contentEquals(paddedArrays.second)) return false
         if (build != other.build) return false
-
         return true
     }
 
@@ -148,22 +148,20 @@ class Version(string: String): Comparable<Version> {
         return thisBuild.compareTo(otherBuild)
     }
 
-// todo iOS overrides ~=
-    //    // Pattern match against a version, use the first argument as a pattern, value will match if any components are equal,
-//    // OR are nil in the pattern,
-//    public static func ~= (_ pattern: Version, _ value: Version) -> Bool {
-//        // assume that all missing components in value are zeros
-//        let components = Zip2WithNilPadding(pattern.marketingComponents, value.marketingComponents).map { ($0.0, $0.1 ?? 0) }
-//
-//        // check that all marketing components are equal, or misisng in the patterns
-//        let marketingMatches = components.reduce(true) {
-//            return $0 && (($1.0 == $1.1) || ($1.0 == nil))
-//        }
-//
-//        // overall equality is marketing equality and build equality
-//        return marketingMatches && ((pattern.build == value.build) || (pattern.build == nil))
-//    }
-
+    /**
+     * Returns true if the marketing components are equal
+     * ie. 2.1.0 equals 2.1.0
+     *     2.1.0 equals 2.1
+     *     2.1.0 does not equal 2.1.1
+     */
+    fun marketingComponentsEqual(other: Version): Boolean {
+        // Pad out arrays with 0s
+        val zipPaddedArrays = createZipPaddedArrays(this.marketingComponents, other.marketingComponents)
+        zipPaddedArrays.forEach {
+            if (it.first != it.second) return false
+        }
+        return true
+    }
 
     //---------------------------------------------------------------------------------
     // Private helpers

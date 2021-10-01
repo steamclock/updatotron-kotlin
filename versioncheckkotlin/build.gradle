@@ -17,6 +17,11 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
+    testOptions {
+        // Allow us to test JSONObject
+        unitTests.returnDefaultValues = true
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -35,10 +40,9 @@ android {
 dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation "androidx.activity:activity-ktx:$ktx_activity"
+
+    testImplementation "junit:junit:$junit"
+    testImplementation "org.json:json:20180813" // Allow us to test JSONObject
+    testImplementation "app.cash.turbine:turbine:$turbine" // Testing StateFlows
 }
