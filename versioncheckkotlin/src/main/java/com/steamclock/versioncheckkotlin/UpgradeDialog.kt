@@ -61,6 +61,15 @@ class DefaultUpgradeDialog(private val versionDisplayState: StateFlow<DisplaySta
                     canDismiss = true
                 )
             }
+            is DisplayState.DevelopmentFailure -> {
+                createBasicDialog(
+                    context,
+                    "Version Check Error",
+                    state.reason,
+                    requiresUpdate = false,
+                    canDismiss = true
+                )
+            }
             // todo 2021-09 Handle down for maintenance
             else -> {
                 dialog?.dismiss()
