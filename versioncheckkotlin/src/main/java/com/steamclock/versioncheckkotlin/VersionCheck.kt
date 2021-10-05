@@ -3,7 +3,6 @@ package com.steamclock.versioncheckkotlin
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.steamclock.versioncheckkotlin.interfaces.*
 import com.steamclock.versioncheckkotlin.models.DisplayState
 import com.steamclock.versioncheckkotlin.models.Status
 import com.steamclock.versioncheckkotlin.models.Version
@@ -35,11 +34,6 @@ class VersionCheck(private val config: VersionCheckConfig):
 
     private val coroutineScope = MainScope()
 
-    /**
-     * For now assume that all side-loaded apps may be able to upgrade to test build versions
-     */
-    private var isTesterMode = config.packageDetails?.wasSideLoaded() ?: false
-
     //--------------------------------------------------
     // App LifecycleObserver Hooks - requires lifecycle annotations
     //--------------------------------------------------
@@ -60,37 +54,31 @@ class VersionCheck(private val config: VersionCheckConfig):
             val jsonStr = config.urlFetcher.getData(URL(config.url))
             if (jsonStr == null) {
                 // Failed to get data from URL
-                setFailure()
+                setFailure("Failed to get config json from URL")
             } else {
-                validateUsingJson(jsonStr, config.appVersionName, config.appVersionCode, config.versionDataConverter)
+                validateUsingJson(jsonStr)
             }
         }
     }
 
-    /**
-     * Allows us the ability to test the validation process without having to worry about
-     * mocking coroutine scope required to fetch the data.
-     */
-    fun validateUsingJson(
-        jsonStr: String,
-        appVersionName: String,
-        appVersionCode: Int,
-        versionDataConverter: VersionDataConverter = DefaultVersionDataConverter) {
-
+    //--------------------------------------------------
+    // Private methods
+    //--------------------------------------------------
+    private fun validateUsingJson(jsonStr: String) {
         val appVersion = try {
-            Version("$appVersionName@$appVersionCode")
+            config.packageDetails.getAppVersion()
         } catch (e: Exception) {
             // Failed to parse app version
-            setFailure()
+            setFailure("Failed to parse app version: ${e.message}")
             null
         }
         appVersion ?: return
 
         try {
-            validateAppVersion(versionDataConverter.parse(jsonStr), appVersion)
+            validateAppVersion(config.versionDataConverter.parse(jsonStr), appVersion)
         } catch (e: Exception) {
             // Failed to parse data
-            setFailure()
+            setFailure("Failed to parse config json: ${e.message}")
             return
         }
     }
@@ -99,14 +87,14 @@ class VersionCheck(private val config: VersionCheckConfig):
         val androidVersionData = serverVersionData.android
         if (androidVersionData == null) {
             // Failed to parse android data
-            setFailure()
+            setFailure("Config json missing androidVersionData component")
             return
         }
 
         val serverMinVersion = androidVersionData.minimumVersion
         if (serverMinVersion == null) {
             // Failed to parse min version
-            setFailure()
+            setFailure("Config json missing serverMinVersion")
             return
         }
 
@@ -127,7 +115,7 @@ class VersionCheck(private val config: VersionCheckConfig):
                 // Server is currently undergoing maintenance
                 setMaintenance()
             }
-            isTesterMode && androidVersionData.shouldUpdateForTesting(appVersion) -> {
+            config.packageDetails.areTestUpdatesSupported() && androidVersionData.shouldUpdateForTesting(appVersion) -> {
                 // If a newer test build is available
                 setTestBuild()
             }
@@ -138,6 +126,9 @@ class VersionCheck(private val config: VersionCheckConfig):
         }
     }
 
+    //--------------------------------------------------
+    // Status and States
+    //--------------------------------------------------
     private fun setDisallowed() {
         mutableStatusFlow.value = Status.VersionDisallowed
         mutableDisplayStateFlow.value = DisplayState.ForceUpdate
@@ -148,9 +139,14 @@ class VersionCheck(private val config: VersionCheckConfig):
         mutableDisplayStateFlow.value = DisplayState.Clear
     }
 
-    private fun setFailure() {
+    private fun setFailure(devMessage: String) {
         mutableStatusFlow.value = Status.FetchFailure
-        mutableDisplayStateFlow.value = DisplayState.Clear
+
+        if (config.packageDetails.isDevelopmentBuild()) {
+            mutableDisplayStateFlow.value = DisplayState.DevelopmentFailure(devMessage)
+        } else {
+            mutableDisplayStateFlow.value = DisplayState.Clear
+        }
     }
 
     private fun setMaintenance() {

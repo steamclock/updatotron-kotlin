@@ -15,10 +15,12 @@ class App: Application() {
     private fun setupVersionCheck() {
         val versionChecker = VersionCheck(
             VersionCheckConfig(
-            appVersionName = BuildConfig.VERSION_NAME,
-            appVersionCode = BuildConfig.VERSION_CODE,
-            url = "https://myservice.com/api/version", // <-- Change this URL
-            packageDetails = DefaultPackageDetails(packageManager, packageName) // Optional, but required for latestTestVersion support
+             packageDetails = DefaultPackageDetails(
+                    BuildConfig.VERSION_NAME,
+                    BuildConfig.VERSION_CODE,
+                    packageManager,
+                    packageName),
+            url = "https://myservice.com/api/version" // <-- Change this URL
           )
         )
         

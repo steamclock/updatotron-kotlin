@@ -9,6 +9,7 @@ import com.steamclock.versioncheckkotlin.VersionCheckConfig
 import com.steamclock.versioncheckkotlin.interfaces.DefaultPackageDetails
 import com.steamclock.versioncheckkotlin.interfaces.DefaultUpgradeDialog
 import com.steamclock.versioncheckkotlin.interfaces.URLFetcher
+import com.steamclock.versioncheckkotlin.models.Version
 import kotlinx.coroutines.*
 import java.net.URL
 import kotlin.random.Random
@@ -23,11 +24,13 @@ class App: Application() {
     private fun setupVersionCheck() {
         val versionChecker = VersionCheck(
             VersionCheckConfig(
-                appVersionName = BuildConfig.VERSION_NAME,
-                appVersionCode = BuildConfig.VERSION_CODE,
+                packageDetails = DefaultPackageDetails(
+                    BuildConfig.VERSION_NAME,
+                    BuildConfig.VERSION_CODE,
+                    packageManager,
+                    packageName),
                 url = "https://doesn't_matter",
-                urlFetcher = MockURLFetcher,
-                packageDetails = DefaultPackageDetails(packageManager, packageName)
+                urlFetcher = MockURLFetcher
             )
         )
         val upgradeDialog = DefaultUpgradeDialog(versionChecker.displayStateFlow)
