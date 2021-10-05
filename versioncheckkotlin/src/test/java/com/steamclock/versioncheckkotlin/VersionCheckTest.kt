@@ -139,6 +139,17 @@ class VersionCheckTest {
         }
     }
 
+    @Test
+    fun `DisplayState set to DevelopmentFailure when json is malformed and is development build`() = runBlocking {
+        versionCheck = VersionCheck(TestConstants.VersionCheckConfig.jsonMalformedDevelopmentBuild)
+        versionCheck.displayStateFlow.test {
+            assertEquals(awaitItem(),DisplayState.Clear)
+            versionCheck.runVersionCheck()
+            assertTrue(awaitItem() is DisplayState.DevelopmentFailure)
+            confirmLastEmit()
+        }
+    }
+
     /**
      * Json valid, but missing Android data
      */
@@ -160,6 +171,17 @@ class VersionCheckTest {
             assertEquals(awaitItem(),DisplayState.Clear)
             versionCheck.runVersionCheck()
             // DisplayState should not get updated/emit
+            confirmLastEmit()
+        }
+    }
+
+    @Test
+    fun `DisplayState set to DevelopmentFailure when json missing android property and is development build`() = runBlocking {
+        versionCheck = VersionCheck(TestConstants.VersionCheckConfig.jsonMissingAndroidDevelopmentBuild)
+        versionCheck.displayStateFlow.test {
+            assertEquals(awaitItem(),DisplayState.Clear)
+            versionCheck.runVersionCheck()
+            assertTrue(awaitItem() is DisplayState.DevelopmentFailure)
             confirmLastEmit()
         }
     }

@@ -93,8 +93,26 @@ object TestConstants {
             urlFetcher = MockURLFetcher(MockJson.malformedJson)
         )
 
+        val jsonMalformedDevelopmentBuild = VersionCheckConfig(
+            packageDetails = MockPackageDetails.IsDevelopmentBuild(
+                appVersionName = "1.1",
+                appVersionCode = 301
+            ),
+            url = "https://this-doesnt-matter",
+            urlFetcher = MockURLFetcher(MockJson.malformedJson)
+        )
+
         val jsonMissingAndroid = VersionCheckConfig(
             packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
+                appVersionName = "1.1",
+                appVersionCode = 301
+            ),
+            url = "https://this-doesnt-matter",
+            urlFetcher = MockURLFetcher(MockJson.invalidVersionDataJson)
+        )
+
+        val jsonMissingAndroidDevelopmentBuild = VersionCheckConfig(
+            packageDetails = MockPackageDetails.IsDevelopmentBuild(
                 appVersionName = "1.1",
                 appVersionCode = 301
             ),
