@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 import java.net.URL
 import kotlin.random.Random
 
-class App: Application(), LifecycleObserver {
+class App: Application() {
 
     override fun onCreate() {
         super.onCreate()
