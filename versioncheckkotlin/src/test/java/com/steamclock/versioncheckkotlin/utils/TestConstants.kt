@@ -87,5 +87,21 @@ object TestConstants {
             url = "https://this-doesnt-matter",
             urlFetcher = MockURLFetcher(MockJson.invalidVersionDataJson)
         )
+
+        val latestTestVersionAvailable = VersionCheckConfig(
+            appVersionName = "1.3",
+            appVersionCode = 400,
+            url = "https://this-doesnt-matter",
+            urlFetcher = MockURLFetcher(MockJson.validVersionDataJson),
+            packageDetails = MockPackageDetails.WasSideLoaded
+        )
+
+        val latestTestVersionNotApplicable = VersionCheckConfig(
+            appVersionName = "1.3",
+            appVersionCode = 400,
+            url = "https://this-doesnt-matter",
+            urlFetcher = MockURLFetcher(MockJson.validVersionDataJson),
+            packageDetails = MockPackageDetails.WasNotSideLoaded
+        )
     }
 }

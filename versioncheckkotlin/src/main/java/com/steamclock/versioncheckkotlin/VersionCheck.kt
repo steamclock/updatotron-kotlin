@@ -35,6 +35,11 @@ class VersionCheck(private val config: VersionCheckConfig):
 
     private val coroutineScope = MainScope()
 
+    /**
+     * For now assume that all side-loaded apps may be able to upgrade to test build versions
+     */
+    private var isTesterMode = config.packageDetails?.wasSideLoaded() ?: false
+
     //--------------------------------------------------
     // App LifecycleObserver Hooks - requires lifecycle annotations
     //--------------------------------------------------
@@ -88,12 +93,10 @@ class VersionCheck(private val config: VersionCheckConfig):
             setFailure()
             return
         }
-
     }
 
     private fun validateAppVersion(serverVersionData: VersionData, appVersion: Version) {
-        // todo 2021-09-27 Add support for latestTestVersion
-        val androidVersionData = serverVersionData?.android
+        val androidVersionData = serverVersionData.android
         if (androidVersionData == null) {
             // Failed to parse android data
             setFailure()
@@ -108,6 +111,10 @@ class VersionCheck(private val config: VersionCheckConfig):
         }
 
         when {
+            serverVersionData.serverForceVersionFailure == true -> {
+                // Server has been set to force update no matter the app version
+                setDisallowed()
+            }
             appVersion < serverMinVersion -> {
                 // App version now below the server minimum
                 setDisallowed()
@@ -115,6 +122,14 @@ class VersionCheck(private val config: VersionCheckConfig):
             androidVersionData.containsBlockedVersion(appVersion) -> {
                 // Current app version is now blocked
                 setDisallowed()
+            }
+            serverVersionData.serverMaintenance == true -> {
+                // Server is currently undergoing maintenance
+                setMaintenance()
+            }
+            isTesterMode && androidVersionData.shouldUpdateForTesting(appVersion) -> {
+                // If a newer test build is available
+                setTestBuild()
             }
             else -> {
                 // If we get all the way down here, the version is allowed!
@@ -125,8 +140,6 @@ class VersionCheck(private val config: VersionCheckConfig):
 
     private fun setDisallowed() {
         mutableStatusFlow.value = Status.VersionDisallowed
-        // todo Currently always ForceUpdate, add logic to determine when shouldUpdate is required
-        // If dialog handler set, have it handle the state immediately
         mutableDisplayStateFlow.value = DisplayState.ForceUpdate
     }
 
@@ -138,5 +151,15 @@ class VersionCheck(private val config: VersionCheckConfig):
     private fun setFailure() {
         mutableStatusFlow.value = Status.FetchFailure
         mutableDisplayStateFlow.value = DisplayState.Clear
+    }
+
+    private fun setMaintenance() {
+        mutableStatusFlow.value = Status.VersionAllowed
+        mutableDisplayStateFlow.value = DisplayState.DownForMaintenance
+    }
+
+    private fun setTestBuild() {
+        mutableStatusFlow.value = Status.VersionAllowed
+        mutableDisplayStateFlow.value = DisplayState.SuggestUpdate
     }
 }

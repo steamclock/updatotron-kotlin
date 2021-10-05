@@ -1,10 +1,12 @@
 package com.steamclock.versioncheckkotlinsample
 
 import android.app.Application
+import android.content.pm.PackageManager
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.steamclock.versioncheckkotlin.VersionCheck
 import com.steamclock.versioncheckkotlin.VersionCheckConfig
+import com.steamclock.versioncheckkotlin.interfaces.DefaultPackageDetails
 import com.steamclock.versioncheckkotlin.interfaces.DefaultUpgradeDialog
 import com.steamclock.versioncheckkotlin.interfaces.URLFetcher
 import kotlinx.coroutines.*
@@ -21,11 +23,12 @@ class App: Application() {
     private fun setupVersionCheck() {
         val versionChecker = VersionCheck(
             VersionCheckConfig(
-            appVersionName = BuildConfig.VERSION_NAME,
-            appVersionCode = BuildConfig.VERSION_CODE,
-            url = "https://doesn't_matter",
-            urlFetcher = MockURLFetcher
-          )
+                appVersionName = BuildConfig.VERSION_NAME,
+                appVersionCode = BuildConfig.VERSION_CODE,
+                url = "https://doesn't_matter",
+                urlFetcher = MockURLFetcher,
+                packageDetails = DefaultPackageDetails(packageManager, packageName)
+            )
         )
         val upgradeDialog = DefaultUpgradeDialog(versionChecker.displayStateFlow)
 

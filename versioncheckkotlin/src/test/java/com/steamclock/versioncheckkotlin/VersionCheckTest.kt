@@ -43,7 +43,7 @@ class VersionCheckTest {
      * On version OK
      */
     @Test
-    fun `Status set to Allowed when app version is ok`() = runBlocking {
+    fun `Status set to VersionAllowed when app version is ok`() = runBlocking {
         versionCheck = VersionCheck(TestConstants.VersionCheckConfig.validApp)
         versionCheck.statusFlow.test {
             assertEquals(Status.Unknown, awaitItem())
@@ -68,7 +68,7 @@ class VersionCheckTest {
      * When app version too old
      */
     @Test
-    fun `Status set to Disallowed when app version older`() = runBlocking {
+    fun `Status set to VersionDisallowed when app version older`() = runBlocking {
         versionCheck = VersionCheck(TestConstants.VersionCheckConfig.appOldVersion)
         versionCheck.statusFlow.test {
             assertEquals(Status.Unknown, awaitItem())
@@ -93,7 +93,7 @@ class VersionCheckTest {
      * When app version is blocked
      */
     @Test
-    fun `Status set to Disallowed when app version is blocked`() = runBlocking {
+    fun `Status set to VersionDisallowed when app version is blocked`() = runBlocking {
         versionCheck = VersionCheck(TestConstants.VersionCheckConfig.appVersionBlocked)
         versionCheck.statusFlow.test {
             assertEquals(Status.Unknown, awaitItem())
@@ -163,4 +163,57 @@ class VersionCheckTest {
             confirmLastEmit()
         }
     }
+
+    /**
+     * LatestTest Available
+     */
+    @Test
+    fun `Status set to VersionAllowed when latestTestVersion available and app side loaded`() = runBlocking {
+        versionCheck = VersionCheck(TestConstants.VersionCheckConfig.latestTestVersionAvailable)
+        versionCheck.statusFlow.test {
+            assertEquals(Status.Unknown, awaitItem())
+            versionCheck.runVersionCheck()
+            assertEquals(Status.VersionAllowed, awaitItem())
+            confirmLastEmit()
+        }
+    }
+
+    // todo need to flip assertEquals prop order
+
+    @Test
+    fun `DisplayState set to SuggestUpdate when latestTestVersion available and app side loaded`() = runBlocking {
+        versionCheck = VersionCheck(TestConstants.VersionCheckConfig.latestTestVersionAvailable)
+        versionCheck.displayStateFlow.test {
+            assertEquals(awaitItem(),DisplayState.Clear)
+            versionCheck.runVersionCheck()
+            assertEquals(awaitItem(),DisplayState.SuggestUpdate)
+            confirmLastEmit()
+        }
+    }
+
+    /**
+     * LatestTest Not Applicable
+     */
+    @Test
+    fun `Status set to VersionAllowed when latestTestVersion available but not applicable`() = runBlocking {
+        versionCheck = VersionCheck(TestConstants.VersionCheckConfig.latestTestVersionNotApplicable)
+        versionCheck.statusFlow.test {
+            assertEquals(Status.Unknown, awaitItem())
+            versionCheck.runVersionCheck()
+            assertEquals(Status.VersionAllowed, awaitItem())
+            confirmLastEmit()
+        }
+    }
+
+    @Test
+    fun `DisplayState set to Clear (only once) when latestTestVersion available but not applicable`() = runBlocking {
+        versionCheck = VersionCheck(TestConstants.VersionCheckConfig.latestTestVersionNotApplicable)
+        versionCheck.displayStateFlow.test {
+            assertEquals(awaitItem(),DisplayState.Clear)
+            versionCheck.runVersionCheck()
+            // DisplayState should not get updated/emit
+            confirmLastEmit()
+        }
+    }
+
 }
