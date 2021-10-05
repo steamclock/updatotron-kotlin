@@ -4,15 +4,22 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import com.steamclock.versioncheckkotlin.models.DisplayState
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.lang.ref.WeakReference
 
-class DefaultUpgradeDialog(private val versionDisplayState: StateFlow<DisplayState>) : Application.ActivityLifecycleCallbacks {
+class DefaultUpgradeDialog(
+    private val versionDisplayState: StateFlow<DisplayState>,
+    private val packageName: String
+) : Application.ActivityLifecycleCallbacks {
+
     private var dialog: AlertDialog? = null
     private val coroutineScope = MainScope()
     private var needToShowDialog = false
@@ -21,6 +28,7 @@ class DefaultUpgradeDialog(private val versionDisplayState: StateFlow<DisplaySta
     init {
         coroutineScope.launch {
             versionDisplayState.collect { displayState ->
+                // If we have a current context, show the dialog immediately; else we need to wait.
                 when (val ctx = currentActivityContext?.get()) {
                     null -> needToShowDialog = true
                     else -> showForState(ctx, displayState)
@@ -95,13 +103,12 @@ class DefaultUpgradeDialog(private val versionDisplayState: StateFlow<DisplaySta
 
             if (requiresUpdate) {
                 // Do not set click listener here, we do not want the button to dismiss the dialog.
-                setNeutralButton("Upgrade", null)
+                setPositiveButton("Update", null)
             }
 
             if (canDismiss) {
-                setPositiveButton("OK") { _, _ ->
+                setNegativeButton("Close") { _, _ ->
                     dialog = null
-                    /* todo */
                 }
             }
         }
@@ -111,10 +118,22 @@ class DefaultUpgradeDialog(private val versionDisplayState: StateFlow<DisplaySta
         // Tap dance a little to override the click listener so the dialog will not dismiss
         dialog?.apply {
             setOnShowListener {
-                getButton(AlertDialog.BUTTON_NEUTRAL)?.setOnClickListener {
-                    // todo Proxy out to Play Store.
+                getButton(AlertDialog.BUTTON_POSITIVE)?.setOnClickListener {
+                    launchPlayStorePage()
                 }
             }
+        }
+    }
+
+    private fun launchPlayStorePage() {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                setPackage("com.android.vending")
+            }
+            currentActivityContext?.get()?.startActivity(intent)
+        } catch (e: Exception) {
+            // 2021-10-05 How to handle error
         }
     }
 
