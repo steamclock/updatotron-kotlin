@@ -263,4 +263,30 @@ class VersionCheckTest {
         }
     }
 
+    /**
+     * Server Force Version Update
+     */
+    @Test
+    fun `Status still set to VersionDisallowed when the serverForceVersionFailure flag is active`() = runBlocking {
+        versionCheck = VersionCheck(TestConstants.VersionCheckConfig.serverForceVersionFailureActive)
+        versionCheck.statusFlow.test {
+            assertEquals(Status.Unknown, awaitItem())
+            versionCheck.runVersionCheck()
+            assertEquals(Status.VersionDisallowed, awaitItem())
+            confirmLastEmit()
+        }
+    }
+
+    @Test
+    fun `DisplayState set to ForceUpdate when the serverForceVersionFailure flag is active`() = runBlocking {
+        versionCheck = VersionCheck(TestConstants.VersionCheckConfig.serverForceVersionFailureActive)
+        versionCheck.displayStateFlow.test {
+            assertEquals(awaitItem(),DisplayState.Clear)
+            versionCheck.runVersionCheck()
+            assertEquals(awaitItem(),DisplayState.ForceUpdate)
+            confirmLastEmit()
+        }
+    }
+
+
 }
