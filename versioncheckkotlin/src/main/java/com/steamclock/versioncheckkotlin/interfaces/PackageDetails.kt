@@ -19,8 +19,11 @@ class DefaultPackageDetails(
 
     override fun getAppVersion() = Version(appVersionName, appVersionCode)
 
+    /**
+     * By default we assume that all builds with code 1 are "development" builds.
+     */
     override fun isDevelopmentBuild(): Boolean {
-        return true
+        return appVersionCode == 1
     }
 
     /**
