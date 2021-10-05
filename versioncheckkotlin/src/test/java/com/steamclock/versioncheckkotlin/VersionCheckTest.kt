@@ -238,4 +238,29 @@ class VersionCheckTest {
         }
     }
 
+    /**
+     * Server Maintenance
+     */
+    @Test
+    fun `Status still set to VersionAllowed when the server is down for maintenance`() = runBlocking {
+        versionCheck = VersionCheck(TestConstants.VersionCheckConfig.serverMaintenanceActive)
+        versionCheck.statusFlow.test {
+            assertEquals(Status.Unknown, awaitItem())
+            versionCheck.runVersionCheck()
+            assertEquals(Status.VersionAllowed, awaitItem())
+            confirmLastEmit()
+        }
+    }
+
+    @Test
+    fun `DisplayState set to DownForMaintenance when the server is down for maintenance`() = runBlocking {
+        versionCheck = VersionCheck(TestConstants.VersionCheckConfig.serverMaintenanceActive)
+        versionCheck.displayStateFlow.test {
+            assertEquals(awaitItem(),DisplayState.Clear)
+            versionCheck.runVersionCheck()
+            assertEquals(awaitItem(),DisplayState.DownForMaintenance)
+            confirmLastEmit()
+        }
+    }
+
 }

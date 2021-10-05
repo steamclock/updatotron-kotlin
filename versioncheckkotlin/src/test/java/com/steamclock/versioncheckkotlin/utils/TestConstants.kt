@@ -44,6 +44,23 @@ object TestConstants {
             "serverMaintenance": false
         }
         """
+
+        const val serverMaintenanceActive = """
+        {
+            "ios" : {
+                "minimumVersion": "1.1",
+                "blockedVersions": ["1.2.0", "1.2.1", "@301"],
+                "latestTestVersion": "1.4.2@400"
+            },
+            "android" : {
+                "minimumVersion": "1.1",
+                "blockedVersions": ["1.2.0", "1.2.1", "@301"],
+                "latestTestVersion": "1.4.2@400"
+            },
+            "serverForceVersionFailure": false,
+            "serverMaintenance": true
+        }
+        """
     }
 
     object VersionCheckConfig {
@@ -136,6 +153,15 @@ object TestConstants {
             ),
             url = "https://this-doesnt-matter",
             urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
+        )
+
+        val serverMaintenanceActive = VersionCheckConfig(
+            packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
+                appVersionName = "1.3",
+                appVersionCode = 400
+            ),
+            url = "https://this-doesnt-matter",
+            urlFetcher = MockURLFetcher(MockJson.serverMaintenanceActive)
         )
     }
 }
