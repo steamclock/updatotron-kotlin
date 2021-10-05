@@ -1,4 +1,4 @@
-package com.steamclock.versioncheckkotlin.interfaces
+package com.steamclock.versioncheckkotlin
 
 import android.app.Activity
 import android.app.AlertDialog

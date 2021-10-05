@@ -1,18 +1,13 @@
 package com.steamclock.versioncheckkotlinsample
 
 import android.app.Application
-import android.content.pm.PackageManager
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.steamclock.versioncheckkotlin.DefaultUpgradeDialog
 import com.steamclock.versioncheckkotlin.VersionCheck
 import com.steamclock.versioncheckkotlin.VersionCheckConfig
 import com.steamclock.versioncheckkotlin.interfaces.DefaultPackageDetails
-import com.steamclock.versioncheckkotlin.interfaces.DefaultUpgradeDialog
 import com.steamclock.versioncheckkotlin.interfaces.URLFetcher
-import com.steamclock.versioncheckkotlin.models.Version
-import kotlinx.coroutines.*
 import java.net.URL
-import kotlin.random.Random
 
 class App: Application() {
 
