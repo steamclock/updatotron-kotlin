@@ -4,7 +4,22 @@ import com.steamclock.versioncheckkotlin.VersionCheckException
 import java.lang.Exception
 import kotlin.math.max
 
-class Version(string: String): Comparable<Version> {
+class Version: Comparable<Version> {
+
+    /**
+     * ex. "2021.6" and "400"
+     * versionName == marketing name
+     */
+    constructor(versionName: String, buildCode: Int) {
+        initWith(versionName, buildCode.toString())
+    }
+
+    /**
+     * ex. "2021.6.2-test@400"
+     */
+    constructor(fullStr: String) {
+        initWith(fullStr)
+    }
 
     var marketingComponents: IntArray = intArrayOf()
         private set
@@ -28,10 +43,6 @@ class Version(string: String): Comparable<Version> {
     //---------------------------------------------------------------------------------
     // Initialization
     //---------------------------------------------------------------------------------
-    init {
-        initWith(string)
-    }
-
     @Throws(VersionCheckException::class)
     private fun initWith(marketing: String?, buildStr: String?) {
         // Build

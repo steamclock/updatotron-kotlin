@@ -1,6 +1,8 @@
 package com.steamclock.versioncheckkotlin.utils
 
 import com.steamclock.versioncheckkotlin.VersionCheckConfig
+import com.steamclock.versioncheckkotlin.interfaces.DefaultPackageDetails
+import com.steamclock.versioncheckkotlin.interfaces.PackageDetails
 
 object TestConstants {
 
@@ -47,61 +49,75 @@ object TestConstants {
     object VersionCheckConfig {
         // Test Config setups
         val validApp = VersionCheckConfig(
-            appVersionName = "1.1",
-            appVersionCode = 400,
+            packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
+                appVersionName = "1.1",
+                appVersionCode = 400
+            ),
             url = "https://this-doesnt-matter",
             urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
         )
 
         val appOldVersion = VersionCheckConfig(
-            appVersionName = "1.0",
-            appVersionCode = 400,
+            packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
+                appVersionName = "1.0",
+                appVersionCode = 400
+            ),
             url = "https://this-doesnt-matter",
             urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
         )
 
         val appVersionBlocked = VersionCheckConfig(
-            appVersionName = "1.2.1",
-            appVersionCode = 400,
+            packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
+                appVersionName = "1.2.1",
+                appVersionCode = 400
+            ),
             url = "https://this-doesnt-matter",
             urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
         )
 
         val appBuildBlocked = VersionCheckConfig(
-            appVersionName = "1.1",
-            appVersionCode = 301,
+            packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
+                appVersionName = "1.1",
+                appVersionCode = 301
+            ),
             url = "https://this-doesnt-matter",
             urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
         )
 
         val jsonMalformed = VersionCheckConfig(
-            appVersionName = "1.1",
-            appVersionCode = 301,
+            packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
+                appVersionName = "1.1",
+                appVersionCode = 301
+            ),
             url = "https://this-doesnt-matter",
             urlFetcher = MockURLFetcher(MockJson.malformedJson)
         )
 
         val jsonMissingAndroid = VersionCheckConfig(
-            appVersionName = "1.1",
-            appVersionCode = 301,
+            packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
+                appVersionName = "1.1",
+                appVersionCode = 301
+            ),
             url = "https://this-doesnt-matter",
             urlFetcher = MockURLFetcher(MockJson.invalidVersionDataJson)
         )
 
         val latestTestVersionAvailable = VersionCheckConfig(
-            appVersionName = "1.3",
-            appVersionCode = 400,
+            packageDetails = MockPackageDetails.TestUpdatesSupported(
+                appVersionName = "1.3",
+                appVersionCode = 400
+            ),
             url = "https://this-doesnt-matter",
-            urlFetcher = MockURLFetcher(MockJson.validVersionDataJson),
-            packageDetails = MockPackageDetails.WasSideLoaded
+            urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
         )
 
         val latestTestVersionNotApplicable = VersionCheckConfig(
-            appVersionName = "1.3",
-            appVersionCode = 400,
+            packageDetails = MockPackageDetails.TestUpdatesNotSupported(
+                appVersionName = "1.3",
+                appVersionCode = 400
+            ),
             url = "https://this-doesnt-matter",
-            urlFetcher = MockURLFetcher(MockJson.validVersionDataJson),
-            packageDetails = MockPackageDetails.WasNotSideLoaded
+            urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
         )
     }
 }
