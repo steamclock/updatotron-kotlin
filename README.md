@@ -23,13 +23,14 @@ class App: Application() {
             url = "https://myservice.com/api/version" // <-- Change this URL
           )
         )
-        
-        // If you wish the VersionCheck to be automatically ran on the Application's OnStart
-        // lifecycle call, add the following line:
+       
+        // Add the following line if you want the version check to be automatically
+        // run whenever the app is "Started"
         ProcessLifecycleOwner.get().lifecycle.addObserver(versionChecker)
-        
-        // If you wish to use the default alert dialog, add the following 2 lines:
-        val upgradeDialog = DefaultUpgradeDialog(versionChecker.displayStateFlow)
+
+        // Add the following lines if you want a default alert dialog to handle the displayStates
+        // and allow the user to jump out to the Play Store to get updates.
+        val upgradeDialog = DefaultUpgradeDialog(versionChecker.displayStateFlow, packageName)
         registerActivityLifecycleCallbacks(upgradeDialog)
     }
 }
