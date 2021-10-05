@@ -22,6 +22,11 @@ class PlatformVersionDataTest {
         blockedVersions = setOf(Version("@400"), Version("2.2.1@300"), Version("2.3@900")),
         latestTestVersion = null)
 
+    private val latestTestVersion = PlatformVersionData(
+        minimumVersion = Version("1.2.0"),
+        blockedVersions = setOf(),
+        latestTestVersion = Version("1.4"))
+
     @Test
     fun testContainsBlockedVersion() {
         val versionNotBlocked = Version("1.2.3@900")
@@ -52,5 +57,13 @@ class PlatformVersionDataTest {
 
         shouldBeTrue.forEach { assertTrue(it.first.containsBlockedVersion(it.second)) }
         shouldNotFalse.forEach { assertFalse(it.first.containsBlockedVersion(it.second)) }
+    }
+
+    @Test
+    fun testShouldUpdateForTesting() {
+        assertTrue(latestTestVersion.shouldUpdateForTesting(Version("1.2.2@200")))
+        assertTrue(latestTestVersion.shouldUpdateForTesting(Version("1.3@400")))
+        assertFalse(latestTestVersion.shouldUpdateForTesting(Version("1.4.0@600")))
+        assertFalse(latestTestVersion.shouldUpdateForTesting(Version("2.4.0@800")))
     }
 }

@@ -33,6 +33,14 @@ data class PlatformVersionData(
             }
         }
     }
+
+    fun shouldUpdateForTesting(other: Version): Boolean {
+        return if (latestTestVersion == null) {
+            false
+        } else {
+            other < latestTestVersion
+        }
+    }
 }
 
 data class VersionData(

@@ -17,7 +17,8 @@ class App: Application() {
             VersionCheckConfig(
             appVersionName = BuildConfig.VERSION_NAME,
             appVersionCode = BuildConfig.VERSION_CODE,
-            url = "https://myservice.com/api/version" // <-- Change this URL
+            url = "https://myservice.com/api/version", // <-- Change this URL
+            packageDetails = DefaultPackageDetails(packageManager, packageName) // Optional, but required for latestTestVersion support
           )
         )
         
