@@ -1,18 +1,13 @@
 package com.steamclock.versioncheckkotlinsample
 
 import android.app.Application
-import android.content.pm.PackageManager
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.steamclock.versioncheckkotlin.DefaultUpgradeDialog
 import com.steamclock.versioncheckkotlin.VersionCheck
 import com.steamclock.versioncheckkotlin.VersionCheckConfig
 import com.steamclock.versioncheckkotlin.interfaces.DefaultPackageDetails
-import com.steamclock.versioncheckkotlin.interfaces.DefaultUpgradeDialog
 import com.steamclock.versioncheckkotlin.interfaces.URLFetcher
-import com.steamclock.versioncheckkotlin.models.Version
-import kotlinx.coroutines.*
 import java.net.URL
-import kotlin.random.Random
 
 class App: Application() {
 
@@ -33,9 +28,14 @@ class App: Application() {
                 urlFetcher = MockURLFetcher
             )
         )
-        val upgradeDialog = DefaultUpgradeDialog(versionChecker.displayStateFlow)
 
+        // Add the following line if you want the version check to be automatically
+        // run whenever the app is "Started"
         ProcessLifecycleOwner.get().lifecycle.addObserver(versionChecker)
+
+        // Add the following lines if you want a default alert dialog to handle the displayStates
+        // and allow the user to jump out to the Play Store to get updates.
+        val upgradeDialog = DefaultUpgradeDialog(versionChecker.displayStateFlow, packageName)
         registerActivityLifecycleCallbacks(upgradeDialog)
     }
 }
