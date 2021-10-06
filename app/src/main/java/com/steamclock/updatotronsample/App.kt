@@ -4,7 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.steamclock.updatotron.DefaultUpgradeDialog
 import com.steamclock.updatotron.Updatotron
-import com.steamclock.updatotron.UpdatotronConfig
+import com.steamclock.updatotron.Config
 import com.steamclock.updatotron.interfaces.DefaultPackageDetails
 import com.steamclock.updatotron.interfaces.URLFetcher
 import java.net.URL
@@ -18,7 +18,7 @@ class App : Application() {
 
     private fun setupUpdatotron() {
         val updatotron = Updatotron(
-            UpdatotronConfig(
+            Config(
                 packageDetails = DefaultPackageDetails(
                     BuildConfig.VERSION_NAME,
                     BuildConfig.VERSION_CODE,

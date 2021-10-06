@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.net.URL
 
-class Updatotron(private val config: UpdatotronConfig):
+class Updatotron(private val config: Config):
     LifecycleObserver {
 
     /**

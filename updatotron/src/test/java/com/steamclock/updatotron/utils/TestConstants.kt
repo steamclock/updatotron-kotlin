@@ -1,6 +1,6 @@
 package com.steamclock.updatotron.utils
 
-import com.steamclock.updatotron.UpdatotronConfig
+import com.steamclock.updatotron.Config
 
 object TestConstants {
 
@@ -80,7 +80,7 @@ object TestConstants {
 
     object Configs {
         // Test Config setups
-        val validApp = UpdatotronConfig(
+        val validApp = Config(
             packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
                 appVersionName = "1.1",
                 appVersionCode = 400
@@ -89,7 +89,7 @@ object TestConstants {
             urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
         )
 
-        val appOldVersion = UpdatotronConfig(
+        val appOldVersion = Config(
             packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
                 appVersionName = "1.0",
                 appVersionCode = 400
@@ -98,7 +98,7 @@ object TestConstants {
             urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
         )
 
-        val appVersionBlocked = UpdatotronConfig(
+        val appVersionBlocked = Config(
             packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
                 appVersionName = "1.2.1",
                 appVersionCode = 400
@@ -107,7 +107,7 @@ object TestConstants {
             urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
         )
 
-        val appBuildBlocked = UpdatotronConfig(
+        val appBuildBlocked = Config(
             packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
                 appVersionName = "1.1",
                 appVersionCode = 301
@@ -116,7 +116,7 @@ object TestConstants {
             urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
         )
 
-        val jsonMalformed = UpdatotronConfig(
+        val jsonMalformed = Config(
             packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
                 appVersionName = "1.1",
                 appVersionCode = 301
@@ -125,7 +125,7 @@ object TestConstants {
             urlFetcher = MockURLFetcher(MockJson.malformedJson)
         )
 
-        val jsonMalformedDevelopmentBuild = UpdatotronConfig(
+        val jsonMalformedDevelopmentBuild = Config(
             packageDetails = MockPackageDetails.IsDevelopmentBuild(
                 appVersionName = "1.1",
                 appVersionCode = 301
@@ -134,7 +134,7 @@ object TestConstants {
             urlFetcher = MockURLFetcher(MockJson.malformedJson)
         )
 
-        val jsonMissingAndroid = UpdatotronConfig(
+        val jsonMissingAndroid = Config(
             packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
                 appVersionName = "1.1",
                 appVersionCode = 301
@@ -143,7 +143,7 @@ object TestConstants {
             urlFetcher = MockURLFetcher(MockJson.invalidVersionDataJson)
         )
 
-        val jsonMissingAndroidDevelopmentBuild = UpdatotronConfig(
+        val jsonMissingAndroidDevelopmentBuild = Config(
             packageDetails = MockPackageDetails.IsDevelopmentBuild(
                 appVersionName = "1.1",
                 appVersionCode = 301
@@ -152,7 +152,7 @@ object TestConstants {
             urlFetcher = MockURLFetcher(MockJson.invalidVersionDataJson)
         )
 
-        val latestTestVersionAvailable = UpdatotronConfig(
+        val latestTestVersionAvailable = Config(
             packageDetails = MockPackageDetails.TestUpdatesSupported(
                 appVersionName = "1.3",
                 appVersionCode = 400
@@ -161,7 +161,7 @@ object TestConstants {
             urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
         )
 
-        val latestTestVersionNotApplicable = UpdatotronConfig(
+        val latestTestVersionNotApplicable = Config(
             packageDetails = MockPackageDetails.TestUpdatesNotSupported(
                 appVersionName = "1.3",
                 appVersionCode = 400
@@ -170,7 +170,7 @@ object TestConstants {
             urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
         )
 
-        val serverMaintenanceActive = UpdatotronConfig(
+        val serverMaintenanceActive = Config(
             packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
                 appVersionName = "1.3",
                 appVersionCode = 400
@@ -179,7 +179,7 @@ object TestConstants {
             urlFetcher = MockURLFetcher(MockJson.serverMaintenanceActive)
         )
 
-        val serverForceVersionFailureActive = UpdatotronConfig(
+        val serverForceVersionFailureActive = Config(
             packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
                 appVersionName = "1.5",
                 appVersionCode = 400
