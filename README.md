@@ -6,31 +6,31 @@ Example basic usage:
 
 ```
 class App: Application() {
-
     override fun onCreate() {
         super.onCreate()
-        setupVersionCheck()
+        setupUpdatotron()
     }
 
-    private fun setupVersionCheck() {
-        val versionChecker = VersionCheck(
-            VersionCheckConfig(
-             packageDetails = DefaultPackageDetails(
+    private fun setupUpdatotron() {
+        val updatotron = Updatotron(
+            Config(
+                packageDetails = DefaultPackageDetails(
                     BuildConfig.VERSION_NAME,
                     BuildConfig.VERSION_CODE,
                     packageManager,
-                    packageName),
-            url = "https://myservice.com/api/version" // <-- Change this URL
-          )
+                    packageName
+                ),
+                url = "https://myservice.com/api/version" // <-- Change this URL
+            )
         )
-       
+
         // Add the following line if you want the version check to be automatically
         // run whenever the app is "Started"
-        ProcessLifecycleOwner.get().lifecycle.addObserver(versionChecker)
+        ProcessLifecycleOwner.get().lifecycle.addObserver(updatotron)
 
         // Add the following lines if you want a default alert dialog to handle the displayStates
         // and allow the user to jump out to the Play Store to get updates.
-        val upgradeDialog = DefaultUpgradeDialog(versionChecker.displayStateFlow, packageName)
+        val upgradeDialog = DefaultUpgradeDialog(updatotron.displayStateFlow, packageName)
         registerActivityLifecycleCallbacks(upgradeDialog)
     }
 }
