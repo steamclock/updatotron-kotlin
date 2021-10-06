@@ -78,6 +78,15 @@ class DefaultUpgradeDialog(
                     canDismiss = true
                 )
             }
+            is DisplayState.DownForMaintenance -> {
+                createBasicDialog(
+                    context,
+                    "Down for Maintenance",
+                    "The server is currently down for maintenance. Please check back later.",
+                    requiresUpdate = false,
+                    canDismiss = false
+                )
+            }
             // todo 2021-09 Handle down for maintenance
             else -> {
                 dialog?.dismiss()

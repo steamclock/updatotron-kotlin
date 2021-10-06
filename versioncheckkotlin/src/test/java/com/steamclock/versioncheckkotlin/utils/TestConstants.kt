@@ -44,6 +44,40 @@ object TestConstants {
             "serverMaintenance": false
         }
         """
+
+        const val serverMaintenanceActive = """
+        {
+            "ios" : {
+                "minimumVersion": "1.1",
+                "blockedVersions": ["1.2.0", "1.2.1", "@301"],
+                "latestTestVersion": "1.4.2@400"
+            },
+            "android" : {
+                "minimumVersion": "1.1",
+                "blockedVersions": ["1.2.0", "1.2.1", "@301"],
+                "latestTestVersion": "1.4.2@400"
+            },
+            "serverForceVersionFailure": false,
+            "serverMaintenance": true
+        }
+        """
+
+        const val serverForceVersionFailureActive = """
+        {
+            "ios" : {
+                "minimumVersion": "1.1",
+                "blockedVersions": ["1.2.0", "1.2.1", "@301"],
+                "latestTestVersion": "1.4.2@400"
+            },
+            "android" : {
+                "minimumVersion": "1.1",
+                "blockedVersions": ["1.2.0", "1.2.1", "@301"],
+                "latestTestVersion": "1.4.2@400"
+            },
+            "serverForceVersionFailure": true,
+            "serverMaintenance": false
+        }
+        """
     }
 
     object VersionCheckConfig {
@@ -136,6 +170,24 @@ object TestConstants {
             ),
             url = "https://this-doesnt-matter",
             urlFetcher = MockURLFetcher(MockJson.validVersionDataJson)
+        )
+
+        val serverMaintenanceActive = VersionCheckConfig(
+            packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
+                appVersionName = "1.3",
+                appVersionCode = 400
+            ),
+            url = "https://this-doesnt-matter",
+            urlFetcher = MockURLFetcher(MockJson.serverMaintenanceActive)
+        )
+
+        val serverForceVersionFailureActive = VersionCheckConfig(
+            packageDetails = MockPackageDetails.IsNotDevelopmentBuild(
+                appVersionName = "1.5",
+                appVersionCode = 400
+            ),
+            url = "https://this-doesnt-matter",
+            urlFetcher = MockURLFetcher(MockJson.serverForceVersionFailureActive)
         )
     }
 }
